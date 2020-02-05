@@ -5,12 +5,16 @@
         class="login-form__form"
         @submit.prevent="login"
       >
-        <input
+        <imask-input
           class="login-form__input phone-input"
-          type="tel"
+          v-model="phoneNumber"
+          :mask="mask"
+          :unmask="false"
+          :value="value"
           placeholder="телефон"
           v-bind:required="this.$store.getters.isPhoneApproved"
-          v-model="phoneNumber"
+
+          @accept="onAccept"
         />
         <button class="login-form__btn" type="submit">Отправить</button>
       </form>
@@ -34,14 +38,24 @@
 <script>
 import { PASS_REQUEST } from "actions/pass";
 import { AUTH_REQUEST } from "actions/auth";
+import { IMaskComponent } from 'vue-imask';
+
 export default {
   name: "Form",
   data() {
     return {
       password: "",
       phoneNumber: "",
-      phoneChecked: false
+      phoneChecked: false,
+      value: "",
+      mask: '+00 (000) 000-00-00',
+      onAccept (value) {
+        console.log(value);
+      },
     };
+  },
+  components: {
+    'imask-input': IMaskComponent
   },
   methods: {
     login: function() {
