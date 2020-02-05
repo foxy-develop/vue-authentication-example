@@ -64,6 +64,8 @@ const webpackConfig = merge(baseWebpackConfig, {
         ? 'index.html'
         : config.build.index,
       template: 'index.html',
+      favicon: '../build/logo.png',
+      title: 'ARTDOCK - Client Panel',
       inject: true,
       minify: {
         removeComments: true,

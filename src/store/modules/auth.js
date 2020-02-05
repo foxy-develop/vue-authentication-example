@@ -8,7 +8,7 @@ import {
 import { USER_REQUEST } from "../actions/user";
 import apiCall from "utils/api";
 import axios from "axios";
-import Vue from "vue";
+
 
 const state = {
   token: localStorage.getItem("user-token") || "",
@@ -28,6 +28,7 @@ const actions = {
       apiCall({ url: "auth", data: password, method: "POST" })
         .then(resp => {
           localStorage.setItem("user-token", resp.token);
+
           axios.defaults.headers.common['Authorization'] = resp.token
           commit(AUTH_SUCCESS, resp);
           dispatch(USER_REQUEST);
