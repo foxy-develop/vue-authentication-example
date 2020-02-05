@@ -1,5 +1,3 @@
-/** * Created by vouill on 11/13/17. */
-
 <template>
   <div class="feed-item">
     <h1>{{ feed.name }}</h1>
