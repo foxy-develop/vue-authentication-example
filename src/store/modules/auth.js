@@ -17,7 +17,7 @@ const state = {
 };
 
 const getters = {
-  isAuthenticated: state => getters.isPhoneApproved && !!state.token,
+  isAuthenticated: () => !!state.token,
 };
 
 
@@ -46,7 +46,8 @@ const actions = {
       axios.post(
           `auth/logout`,
           { token })
-      .then(() => {
+      .then(resp => {
+        console.log(resp);
         commit(AUTH_LOGOUT);
         resolve();
       });

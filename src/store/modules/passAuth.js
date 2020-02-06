@@ -23,7 +23,7 @@ const getters = {
 };
 
 const actions = {
-  [PASS_REQUEST]: ({ commit }, { phone }) => {
+  [PASS_REQUEST]: ({ commit }, phone ) => {
     return new Promise((resolve, reject) => {
       commit(PASS_REQUEST);
       axios.defaults.headers.common['X-API-KEY'] = 'c8578dcef57c0e7d97d88707614f1184';

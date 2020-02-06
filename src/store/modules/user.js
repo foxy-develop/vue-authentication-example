@@ -45,11 +45,12 @@ const actions = {
   },
   [USER_SWITCH_MODE]: ({ commit }, { token }) => {
     return new Promise(resolve => {
-      const theme = state.displayMode;
+      const theme = state.displayMode === 'dark' ? 'light' : 'dark';;
       axios.post(
         `user/settheme`,
         { token, theme })
       .then(resp => {
+        console.log(resp);
         if ( resp.data.status ) {
           commit(USER_SWITCH_MODE);
           resolve();
