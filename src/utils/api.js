@@ -16,5 +16,5 @@ const apiCall = ({ url, method }) =>
       }
     }, 100);
   });
-
 export default apiCall;
+

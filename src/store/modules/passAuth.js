@@ -4,25 +4,31 @@ import {
   PASS_ERROR,
   PASS_SUCCESS
 } from "../actions/pass";
-import Vue from "vue";
-import AxiosPlugin from "vue-axios-cors";
+
 import axios from "axios";
+
 
 const state = {
   status: "",
-  hasLoadedOnce: false
+  hasLoadedOnce: false,
+  phoneToken: "",
+  message: ''
 };
 
 const getters = {
-  isPhoneApproved: state => state.status === "success"
+  isPhoneApproved: state => !!state.status && !!state.phoneToken,
+  getToken: state => state.phoneToken,
+  getMessage: state => state.message,
+  hasError: state => state.status === false
 };
 
 const actions = {
-  [PASS_REQUEST]: ({ commit }, phone) => {
+  [PASS_REQUEST]: ({ commit }, { phone }) => {
     return new Promise((resolve, reject) => {
-      Vue.use(AxiosPlugin);
+      commit(PASS_REQUEST);
       axios.defaults.headers.common['X-API-KEY'] = 'c8578dcef57c0e7d97d88707614f1184';
-      axios.post('https://cliff.world/api/auth', {phone: phone })
+      axios.defaults.baseURL = 'https://cliff.world/api/'
+      axios.post('auth', { phone } )
         .then(resp => {
           console.log(resp);
           commit(PASS_SUCCESS, resp);
@@ -40,13 +46,22 @@ const mutations = {
   [PASS_REQUEST]: state => {
     state.status = "loading";
   },
-  [PASS_SUCCESS]: state => {
-    state.status = "success";
+  [PASS_SUCCESS]: (state, resp) => {
+    state.status = resp.data.status;
     state.hasLoadedOnce = true;
+    if ( state.status ) {
+      state.phoneToken = resp.data.token;
+      state.message = '';
+    } else {
+      state.message = resp.data.message;
+    }
+
   },
   [PASS_ERROR]: state => {
     state.status = "error";
     state.hasLoadedOnce = true;
+    state.phoneToken = "";
+    localStorage.removeItem("user-token");
   }
 };
 

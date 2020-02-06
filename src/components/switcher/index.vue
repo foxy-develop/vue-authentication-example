@@ -27,7 +27,8 @@ export default {
   name: "Switcher",
   methods: {
     switchDisplayMode: function() {
-      this.$store.dispatch(USER_SWITCH_MODE);
+      const token = localStorage.getItem("user-token");
+      this.$store.dispatch(USER_SWITCH_MODE, { token });
     }
   }
 }

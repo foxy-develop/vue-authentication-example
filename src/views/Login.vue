@@ -40,7 +40,7 @@ export default {
 
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 @function rem($px) {
   @return $px / 10 * 1rem;
 }
@@ -71,6 +71,7 @@ $shadow-color: #142e6e;
   line-height: 2rem;
   letter-spacing: 0.1px;
   z-index: 1;
+  width: 100%;
   &__img {
     height: auto;
     max-height: 20.5rem;
@@ -81,6 +82,12 @@ $shadow-color: #142e6e;
     margin-right: auto;
     position: relative;
     left: -3rem;
+    animation: reveal-top;
+    animation-duration: 1s;
+    animation-timing-function: cubic-bezier(.78,.13,0,.97);
+    animation-fill-mode: forwards;
+    transform: translate(0, -100%);
+    opacity: 0;
     @include tablet {
       margin-bottom: 3rem;
     }
@@ -92,6 +99,14 @@ $shadow-color: #142e6e;
     width: 100%;
     height: auto;
     margin-bottom: 7rem;
+    animation: reveal-logo;
+    animation-duration: .35s;
+    animation-delay: .75s;
+    animation-timing-function: cubic-bezier(0,.82,.86,.85);
+    animation-fill-mode: forwards;
+    transform-origin: top;
+    transform: scaleY(0);
+    opacity: 0;
     @include tablet {
       margin-bottom: 10rem;
     }
@@ -101,6 +116,49 @@ $shadow-color: #142e6e;
     @include desktop-lg {
       margin-bottom: 16rem;
     }
+  }
+  &__input, &__btn {
+    animation: reveal-form;
+    animation-duration: .3s;
+    animation-delay: .8s;
+    animation-timing-function: cubic-bezier(0,.82,.86,.85);
+    animation-fill-mode: forwards;
+    transform-origin: top;
+    transform: translate(0, -25%);
+    opacity: 0;
+  }
+  &__btn {
+    animation-delay: 1.1s;
+  }
+}
+  @keyframes reveal-top {
+    from{
+      transform: translate(0, -100%);
+      opacity: 0;
+    }
+    to {
+      transform: translate(0, 0);
+      opacity: 1;
+     }
+  }
+@keyframes reveal-logo {
+  from{
+    transform: scaleY(0) translate(0, -15%);
+    opacity: 0;
+  }
+  to {
+    transform: scaleY(1) translate(0, 0);
+    opacity: 1;
+  }
+}
+@keyframes reveal-form {
+  from{
+    transform: translate(0, -25%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(0, 0);
+    opacity: 1;
   }
 }
 </style>

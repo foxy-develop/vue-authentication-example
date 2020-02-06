@@ -5,47 +5,51 @@ import {
   AUTH_SUCCESS,
   AUTH_LOGOUT
 } from "../actions/auth";
-import { USER_REQUEST } from "../actions/user";
-import apiCall from "utils/api";
+import Vue from "vue";
+import AxiosPlugin from "vue-axios-cors";
 import axios from "axios";
 
 
 const state = {
-  token: localStorage.getItem("user-token") || "",
   status: "",
-  hasLoadedOnce: false
+  hasLoadedOnce: false,
+  token: localStorage.getItem("user-token")
 };
 
 const getters = {
-  isAuthenticated: state => !!state.token,
-  authStatus: state => state.status
+  isAuthenticated: state => getters.isPhoneApproved && !!state.token,
 };
 
+
+
 const actions = {
-  [AUTH_REQUEST]: ({ commit, dispatch }, password) => {
+  [AUTH_REQUEST]: ({ commit }, { password, token }) => {
     return new Promise((resolve, reject) => {
       commit(AUTH_REQUEST);
-      apiCall({ url: "auth", data: password, method: "POST" })
+      Vue.use(AxiosPlugin);
+      axios.post(
+        `auth/login`,
+        { password, token })
         .then(resp => {
-          localStorage.setItem("user-token", resp.token);
-
-          axios.defaults.headers.common['Authorization'] = resp.token
           commit(AUTH_SUCCESS, resp);
-          dispatch(USER_REQUEST);
           resolve(resp);
         })
         .catch(err => {
           commit(AUTH_ERROR, err);
-          localStorage.removeItem("user-token");
           reject(err);
         });
     });
   },
-  [AUTH_LOGOUT]: ({ commit }) => {
+  [AUTH_LOGOUT]: ({ commit }, { token }) => {
     return new Promise(resolve => {
-      commit(AUTH_LOGOUT);
-      localStorage.removeItem("user-token");
-      resolve();
+      Vue.use(AxiosPlugin);
+      axios.post(
+          `auth/logout`,
+          { token })
+      .then(() => {
+        commit(AUTH_LOGOUT);
+        resolve();
+      });
     });
   }
 };
@@ -55,16 +59,27 @@ const mutations = {
     state.status = "loading";
   },
   [AUTH_SUCCESS]: (state, resp) => {
-    state.status = "success";
-    state.token = resp.token;
-    state.hasLoadedOnce = true;
+    if ( resp.data.status ) {
+      state.status = "success";
+      state.hasLoadedOnce = true;
+      state.token = resp.data.token;
+      localStorage.setItem('user-token', resp.data.token);
+      axios.defaults.headers.common['token'] = resp.data.token;
+    } else {
+      state.token = "";
+      state.phoneToken = "";
+      localStorage.removeItem("user-token");
+    }
   },
   [AUTH_ERROR]: state => {
     state.status = "error";
     state.hasLoadedOnce = true;
+    localStorage.removeItem("user-token");
   },
   [AUTH_LOGOUT]: state => {
     state.token = "";
+    state.phoneToken = "";
+    localStorage.removeItem("user-token");
   }
 };
 

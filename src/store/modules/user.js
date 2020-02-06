@@ -1,9 +1,15 @@
-import { USER_REQUEST, USER_ERROR, USER_SUCCESS, USER_SET_MODE, USER_SWITCH_MODE } from "../actions/user";
-import apiCall from "utils/api";
+import { USER_REQUEST, USER_ERROR, USER_SUCCESS, USER_SWITCH_MODE } from "../actions/user";
 import Vue from "vue";
-import { AUTH_LOGOUT } from "../actions/auth";
+import AxiosPlugin from "vue-axios-cors";
+import axios from "axios";
+import {AUTH_LOGOUT } from "../actions/auth";
 
-const state = { status: "", profile: {}, displayMode: "dark" };
+const state = {
+  status: "",
+  profile: {},
+  displayMode: "dark",
+};
+
 
 const getters = {
   getProfile: state => state.profile,
@@ -13,54 +19,59 @@ const getters = {
 
 const actions = {
   [USER_REQUEST]: ({ commit, dispatch }) => {
-    commit(USER_REQUEST);
-    apiCall({ url: "user", method: "POST" })
-      .then(resp => {
-        commit(USER_SUCCESS, resp);
-        commit(USER_SET_MODE, resp);
-      })
-      .catch(() => {
-        commit(USER_ERROR);
-        // if resp is unauthorized, logout, to
-        dispatch(AUTH_LOGOUT);
-      });
-  },
-  [USER_SET_MODE]: ({ commit }) => {
     return new Promise(resolve => {
-      commit(USER_SET_MODE);
-      resolve();
+      Vue.use(AxiosPlugin);
+      axios.defaults.headers.common['X-API-KEY'] = 'c8578dcef57c0e7d97d88707614f1184';
+      axios.defaults.baseURL = 'https://cliff.world/api/';
+      commit(USER_REQUEST);
+      const token = localStorage.getItem('user-token');
+      axios.post(
+        `user/profile`,
+        { token })
+        .then(resp => {
+          console.log(resp);
+          if (resp.data.status) {
+            commit(USER_SUCCESS, resp);
+            resolve();
+          }
+        })
+        .catch(() => {
+          commit(USER_ERROR);
+          // if resp is unauthorized, logout, to
+          dispatch(AUTH_LOGOUT);
+          resolve();
+        });
     });
   },
-  [USER_SWITCH_MODE]: ({ commit }) => {
+  [USER_SWITCH_MODE]: ({ commit }, { token }) => {
     return new Promise(resolve => {
-      commit(USER_SWITCH_MODE);
-      resolve();
+      const theme = state.displayMode;
+      axios.post(
+        `user/settheme`,
+        { token, theme })
+      .then(resp => {
+        if ( resp.data.status ) {
+          commit(USER_SWITCH_MODE);
+          resolve();
+        }
+      })
     });
   }
 };
 
 const mutations = {
-  [USER_SET_MODE]: (state, resp) => {
-    if (!localStorage["displayMode"] ) {
-      localStorage.setItem("displayMode", resp.displayMode);
-    }
-    Vue.set(state, "displayMode", localStorage["displayMode"]);
-  },
   [USER_SWITCH_MODE]: state => {
-    if (localStorage["displayMode"] ) {
-      state.displayMode = localStorage["displayMode"] === 'dark' ? 'light' : 'dark';
-    } else {
-      state.displayMode = state.displayMode === 'dark' ? 'light' : 'dark';
-    }
-    Vue.set(state, "displayMode", state.displayMode);
+    state.displayMode = localStorage.getItem("displayMode") === 'dark' ? 'light' : 'dark';
     localStorage.setItem("displayMode", state.displayMode);
   },
   [USER_REQUEST]: state => {
     state.status = "loading";
   },
   [USER_SUCCESS]: (state, resp) => {
+    state.displayMode = resp.data.profile.theme;
+    localStorage.setItem("displayMode", resp.data.profile.theme);
     state.status = "success";
-    Vue.set(state, "profile", resp);
+    Vue.set(state, "profile", resp.data.profile);
   },
   [USER_ERROR]: state => {
     state.status = "error";

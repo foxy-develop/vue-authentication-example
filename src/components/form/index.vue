@@ -1,27 +1,18 @@
 <template>
   <transition name="fade" mode="out-in">
-    <div class="login-form">
-      <form v-if="!this.$store.getters.isPhoneApproved"
-        class="login-form__form"
-        @submit.prevent="login"
-      >
+    <div v-bind:class="[this.$store.getters.hasError ? 'form-wrapper has-error' : 'form-wrapper']">
+      <form v-if="!this.$store.getters.isPhoneApproved" class="login-form__form" @submit.prevent="getPass">
         <imask-input
           class="login-form__input phone-input"
-          v-model="phoneNumber"
+          v-model="phone"
           :mask="mask"
           :unmask="false"
           :value="value"
           placeholder="телефон"
-          v-bind:required="this.$store.getters.isPhoneApproved"
-
-          @accept="onAccept"
         />
         <button class="login-form__btn" type="submit">Отправить</button>
       </form>
-      <form v-else
-        class="login-form__form"
-        @submit.prevent="login"
-      >
+      <form v-else class="login-form__form" @submit.prevent="login">
         <input
           class="login-form__input"
           v-bind:required="!this.$store.getters.isPhoneApproved"
@@ -31,6 +22,7 @@
         />
         <button class="login-form__btn" type="submit">Войти</button>
       </form>
+      <div v-show="this.$store.getters.hasError" class="login-form__notif"> {{ this.$store.getters.getMessage }} </div>
     </div>
   </transition>
 </template>
@@ -45,13 +37,10 @@ export default {
   data() {
     return {
       password: "",
-      phoneNumber: "",
+      phone: "",
       phoneChecked: false,
       value: "",
-      mask: '+00 (000) 000-00-00',
-      onAccept (value) {
-        console.log(value);
-      },
+      mask: '+00 (000) 000-00-00'
     };
   },
   components: {
@@ -59,15 +48,15 @@ export default {
   },
   methods: {
     login: function() {
-      if (this.$store.getters.isPhoneApproved) {
+        const token = this.$store.getters.getToken;
         const { password } = this;
-        this.$store.dispatch(AUTH_REQUEST, { password }).then(() => {
+        this.$store.dispatch(AUTH_REQUEST, { password, token }).then(() => {
           this.$router.push("/");
         });
-      } else {
-        const { phoneNumber } = this;
-        this.$store.dispatch(PASS_REQUEST, { phoneNumber });
-      }
+    },
+    getPass: function() {
+      const { phone } = this;
+      this.$store.dispatch(PASS_REQUEST, phone );
     }
   }
 }
@@ -107,6 +96,11 @@ $shadow-color: #142e6e;
     }
   }
 }
+.form-wrapper {
+  width: 100%;
+  position: relative;
+}
+
 .login-form {
   width: 100%;
   &__form {
@@ -159,6 +153,17 @@ $shadow-color: #142e6e;
       }
     }
   }
+  &__notif {
+    color: red;
+    position: absolute;
+    top: 5.5rem;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.2rem;
+    transform: translateX(-50%);
+    left: 50%;
+    opacity: 0;
+    transition: .3s ease-in-out;
+  }
   &__text {
     color: $grey;
     font-size: 1.4rem;
@@ -196,6 +201,45 @@ $shadow-color: #142e6e;
     &:hover {
       background: $main-hover;
     }
+  }
+  &__input, &__btn {
+    animation: reveal-form;
+    animation-duration: .6s;
+    animation-delay: 1.2s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+    transform-origin: top;
+    transform: translate(0, -50%);
+    opacity: 0;
+  }
+  &__btn {
+    animation-delay: 1.4s;
+    animation-duration: .5s;
+  }
+  @keyframes reveal-form {
+    from{
+      transform: translate(0, -50%);
+      opacity: 0;
+    }
+    to {
+      transform: translate(0, 0);
+      opacity: 1;
+    }
+  }
+}
+.has-error {
+  .login-form__input {
+    border-color: rgba(132, 30, 30, .5);
+    &:not(:focus) {
+      background: rgba(236, 34, 34, 0.05);
+      &::placeholder {
+        color: rgba(255, 190, 183, 0.84);
+      }
+    }
+  }
+  .login-form__notif {
+    opacity: 1;
+    transition: .3s ease-in-out;
   }
 }
 </style>

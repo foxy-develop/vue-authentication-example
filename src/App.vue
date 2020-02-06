@@ -7,7 +7,7 @@
             ? 'body body--light'
             :  'body body--dark'
        ]">
-    <Header v-show="this.$store.getters.isAuthenticated" />
+    <Header v-show="this.$store.getters.isProfileLoaded" />
     <main v-bind:class="[ this.$store.getters.isAuthenticated
        ? 'main'
        : 'main main--bg' ]">
@@ -20,7 +20,7 @@
 
 <script>
 import Header from "components/header";
-import { USER_REQUEST, USER_SET_MODE } from "actions/user";
+import { USER_REQUEST } from "actions/user";
 
 export default {
   components: {
@@ -30,7 +30,6 @@ export default {
   created: function() {
     if (this.$store.getters.isAuthenticated) {
       this.$store.dispatch(USER_REQUEST);
-      this.$store.dispatch(USER_SET_MODE);
     }
   },
 };
@@ -59,6 +58,7 @@ body, .body {
   font-weight: normal;
   line-height: 1;
   min-height: 100vh;
+  margin: 0;
 }
 button {
   border: 0;
@@ -140,6 +140,10 @@ body {
     background: url("assets/ART.svg");
     background-repeat: no-repeat;
     background-position: center;
+    animation-fill-mode: forwards;
+    animation: reveal;
+    animation-duration: 1.4s;
+    animation-timing-function: cubic-bezier(0,.31,.47,1.47);
     @include desktop {
       background-size: contain;
     }
@@ -156,6 +160,14 @@ body {
     @include desktop {
       flex-direction: row;
     }
+  }
+}
+@keyframes reveal {
+  from {
+    background-position-y: 30%;
+  }
+  to {
+    background-position-y: 50%;
   }
 }
 </style>
