@@ -11,13 +11,12 @@ import axios from "axios";
 const state = {
   status: "",
   hasLoadedOnce: false,
-  phoneToken: "",
+  phone: "",
   message: ''
 };
 
 const getters = {
-  isPhoneApproved: state => !!state.status && !!state.phoneToken,
-  getToken: state => state.phoneToken,
+  isPhoneApproved: state => !!state.phone,
   getMessage: state => state.message,
   hasError: state => state.status === false
 };
@@ -25,9 +24,7 @@ const getters = {
 const actions = {
   [PASS_REQUEST]: ({ commit }, phone ) => {
     return new Promise((resolve, reject) => {
-      commit(PASS_REQUEST);
-      axios.defaults.headers.common['X-API-KEY'] = 'c8578dcef57c0e7d97d88707614f1184';
-      axios.defaults.baseURL = 'https://cliff.world/api/'
+      commit(PASS_REQUEST, phone);
       axios.post('auth', { phone } )
         .then(resp => {
           console.log(resp);
@@ -43,26 +40,21 @@ const actions = {
 };
 
 const mutations = {
-  [PASS_REQUEST]: state => {
+  [PASS_REQUEST]: (state, phone) => {
     state.status = "loading";
+    state.phone = phone;
   },
-  [PASS_SUCCESS]: (state, resp) => {
+  [PASS_SUCCESS]: (state, resp ) => {
     state.status = resp.data.status;
     state.hasLoadedOnce = true;
-    if ( state.status ) {
-      state.phoneToken = resp.data.token;
-      state.message = '';
-    } else {
-      state.message = resp.data.message;
-    }
-
+    state.message = resp.data.message;
   },
-  [PASS_ERROR]: state => {
-    state.status = "error";
+  [PASS_ERROR]: state  => {
+    state.status = false;
     state.hasLoadedOnce = true;
-    state.phoneToken = "";
+    state.phone = "";
     localStorage.removeItem("user-token");
-  }
+  },
 };
 
 export default {

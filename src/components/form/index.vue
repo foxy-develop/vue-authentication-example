@@ -12,7 +12,7 @@
         />
         <button class="login-form__btn" type="submit">Отправить</button>
       </form>
-      <form v-else class="login-form__form" @submit.prevent="login">
+      <form v-else class="login-form__form no-delay" @submit.prevent="login">
         <input
           class="login-form__input"
           v-bind:required="!this.$store.getters.isPhoneApproved"
@@ -36,8 +36,8 @@ export default {
   name: "Form",
   data() {
     return {
-      password: "",
-      phone: "",
+      password: "000000",
+      phone: "+38 (063) 307-67-19",
       phoneChecked: false,
       value: "",
       mask: '+00 (000) 000-00-00'
@@ -48,9 +48,8 @@ export default {
   },
   methods: {
     login: function() {
-        const token = this.$store.getters.getToken;
-        const { password } = this;
-        this.$store.dispatch(AUTH_REQUEST, { password, token }).then(() => {
+        const { password, phone } = this;
+        this.$store.dispatch(AUTH_REQUEST, { password, phone }).then(() => {
           this.$router.push("/");
         });
     },
@@ -216,15 +215,23 @@ $shadow-color: #142e6e;
     animation-delay: 1.4s;
     animation-duration: .5s;
   }
-  @keyframes reveal-form {
-    from{
-      transform: translate(0, -50%);
-      opacity: 0;
+}
+.no-delay {
+  .login-form {
+    &__input, &__btn {
+      animation-duration: .3s;
+      animation-delay: 0.1s;
     }
-    to {
-      transform: translate(0, 0);
-      opacity: 1;
-    }
+  }
+}
+@keyframes reveal-form {
+  from{
+    transform: translate(0, -50%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(0, 0);
+    opacity: 1;
   }
 }
 .has-error {

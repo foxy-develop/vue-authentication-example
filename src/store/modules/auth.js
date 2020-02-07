@@ -5,50 +5,60 @@ import {
   AUTH_SUCCESS,
   AUTH_LOGOUT
 } from "../actions/auth";
-import Vue from "vue";
-import AxiosPlugin from "vue-axios-cors";
+import { USER_REQUEST } from "../actions/user";
 import axios from "axios";
-
 
 const state = {
   status: "",
   hasLoadedOnce: false,
-  token: localStorage.getItem("user-token")
+  token: localStorage.getItem("user-token") || '',
+  message: ''
 };
 
 const getters = {
-  isAuthenticated: () => !!state.token,
+  isAuthenticated: state => !!state.token,
+  authStatus: state => state.status
 };
 
 
-
 const actions = {
-  [AUTH_REQUEST]: ({ commit }, { password, token }) => {
+  [AUTH_REQUEST]: ({ commit, dispatch }, { password, phone }) => {
     return new Promise((resolve, reject) => {
       commit(AUTH_REQUEST);
-      Vue.use(AxiosPlugin);
       axios.post(
         `auth/login`,
-        { password, token })
+        { password, phone })
         .then(resp => {
-          commit(AUTH_SUCCESS, resp);
-          resolve(resp);
+          console.log(resp);
+          if ( resp.data.status ) {
+            const token = resp.data.token
+            localStorage.setItem('user-token', token);
+            axios.defaults.headers.common['Access-Token'] = token;
+            commit(AUTH_SUCCESS, resp);
+            dispatch(USER_REQUEST);
+            resolve(resp);
+          } else {
+            commit(AUTH_ERROR);
+            localStorage.removeItem("user-token");
+            resolve();
+          }
         })
         .catch(err => {
           commit(AUTH_ERROR, err);
+          localStorage.removeItem("user-token");
           reject(err);
         });
     });
   },
-  [AUTH_LOGOUT]: ({ commit }, { token }) => {
+  [AUTH_LOGOUT]: ({ commit }) => {
     return new Promise(resolve => {
-      Vue.use(AxiosPlugin);
-      axios.post(
-          `auth/logout`,
-          { token })
+      axios.get(`auth/logout`)
       .then(resp => {
         console.log(resp);
         commit(AUTH_LOGOUT);
+        localStorage.removeItem('user-token');
+        localStorage.removeItem("displayMode");
+        delete axios.defaults.headers.common['Access-Token']
         resolve();
       });
     });
@@ -59,28 +69,20 @@ const mutations = {
   [AUTH_REQUEST]: state => {
     state.status = "loading";
   },
-  [AUTH_SUCCESS]: (state, resp) => {
-    if ( resp.data.status ) {
-      state.status = "success";
-      state.hasLoadedOnce = true;
-      state.token = resp.data.token;
-      localStorage.setItem('user-token', resp.data.token);
-      axios.defaults.headers.common['token'] = resp.data.token;
-    } else {
-      state.token = "";
-      state.phoneToken = "";
-      localStorage.removeItem("user-token");
-    }
-  },
-  [AUTH_ERROR]: state => {
-    state.status = "error";
+  [AUTH_SUCCESS]: ( state, resp ) => {
+    state.message = '';
+    state.status = resp.data.status;
     state.hasLoadedOnce = true;
-    localStorage.removeItem("user-token");
+    state.token = resp.data.token;
+  },
+  [AUTH_ERROR]: ( state, resp ) => {
+    state.message = resp.data.message;
+    state.status = false;
+    state.hasLoadedOnce = true;
   },
   [AUTH_LOGOUT]: state => {
     state.token = "";
-    state.phoneToken = "";
-    localStorage.removeItem("user-token");
+    state.phone = "";
   }
 };
 

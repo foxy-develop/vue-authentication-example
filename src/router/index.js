@@ -2,8 +2,6 @@ import Vue from "vue";
 import Router from "vue-router";
 
 import store from "../store";
-import {PASS_ERROR, PASS_SUCCESS} from "../store/actions/pass";
-import { USER_REQUEST } from "../store/actions/user";
 
 Vue.use(Router);
 
@@ -29,8 +27,8 @@ const ifAuthenticated = (to, from, next) => {
   next("/login");
 };
 
-const ifProfileLoaded = () => new Promise(resolve =>
-    store.getters.isProfileLoaded.then(resp => resolve(resp)));
+// const ifProfileLoaded = () => new Promise(resolve =>
+//     store.getters.isProfileLoaded.then(resp => resolve(resp)));
 
 export default new Router({
   mode: "history",
@@ -42,7 +40,7 @@ export default new Router({
       beforeEnter: ifAuthenticated
     },
     {
-      path: "/account",
+      path: "/mentions",
       name: "Mentions",
       component: Mentions,
       beforeEnter: ifAuthenticated
@@ -52,8 +50,7 @@ export default new Router({
       name: "Login",
       meta: { darkMode: true },
       component: Login,
-      beforeEnter: ifNotAuthenticated,
-      beforeRouteLeave: ifProfileLoaded
+      beforeEnter: ifNotAuthenticated
     }
   ]
 });

@@ -155,6 +155,7 @@ $bg-dark: rgba(249, 251, 253, 0.05);
     margin: 0 auto;
     align-items: center;
     justify-content: space-between;
+    box-sizing: border-box;
   }
   &__user {
     display: flex;
@@ -215,8 +216,7 @@ export default {
   components: { Switcher },
   methods: {
     logout: function() {
-      const token = localStorage.getItem("phone-token");
-      this.$store.dispatch(AUTH_LOGOUT, { token }).then(() => this.$router.push("/login"));
+      this.$store.dispatch(AUTH_LOGOUT).then(() => this.$router.push("/login"));
     }
   },
   computed: {

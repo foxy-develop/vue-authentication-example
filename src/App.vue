@@ -1,19 +1,15 @@
 <template>
   <div id="app"
-       v-bind:class="[
-         this.$store.getters.isDarkMode
-           ? 'body body--dark'
-           : this.$router != '/login'
-            ? 'body body--light'
-            :  'body body--dark'
-       ]">
+       v-bind:class="[ 'body', 'body--'+this.$store.getters.theme ]">
     <Header v-show="this.$store.getters.isProfileLoaded" />
     <main v-bind:class="[ this.$store.getters.isAuthenticated
        ? 'main'
        : 'main main--bg' ]">
-      <transition name="fade" mode="out-in">
-        <router-view />
-      </transition>
+      <div class="main main__inner">
+        <transition name="fade" mode="out-in">
+          <router-view />
+        </transition>
+      </div>
     </main>
   </div>
 </template>
@@ -28,7 +24,7 @@ export default {
   },
   name: "app",
   created: function() {
-    if (this.$store.getters.isAuthenticated) {
+    if (this.$store.getters.isAuthenticated && !this.$store.getters.isProfileLoaded) {
       this.$store.dispatch(USER_REQUEST);
     }
   },
