@@ -7,7 +7,7 @@ import {DATA_REQUEST} from "../actions/charts";
 const state = {
   status: "",
   profile: {},
-  displayMode: "dark",
+  displayMode: 'dark',
 };
 
 
@@ -25,7 +25,6 @@ const actions = {
         .then(resp => {
           console.log(resp);
           if (resp.data.status) {
-            localStorage.setItem("displayMode", resp.data.profile.theme);
             commit(USER_SUCCESS, resp);
             dispatch(DATA_REQUEST);
             resolve();
@@ -48,6 +47,7 @@ const actions = {
       .then(resp => {
         console.log(resp);
         if ( resp.data.status ) {
+          localStorage.removeItem('displayMode');
           localStorage.setItem("displayMode", theme);
           commit(USER_SWITCH_MODE);
           resolve();
@@ -65,8 +65,9 @@ const mutations = {
     state.status = "loading";
   },
   [USER_SUCCESS]: (state, resp) => {
-    state.displayMode = resp.data.profile.theme;
     state.status = "success";
+    state.displayMode = resp.data.profile.theme;
+    localStorage.setItem("displayMode", resp.data.profile.theme);
     Vue.set(state, "profile", resp.data.profile);
   },
   [USER_ERROR]: state => {

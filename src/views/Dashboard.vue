@@ -6,11 +6,8 @@
     <template v-slot:title>
       Общая статистика выдачи
     </template>
-    <template v-slot:content>
-      <ChartControl v-show="this.$store.getters.isDataLoaded"></ChartControl>
-      <div class="content__chart">
-        <line-chart :chart-data="datasets"></line-chart>
-      </div>
+    <template v-slot:content >
+      <StatCharts></StatCharts>
       <div class="content__caption">
         <div class="content__legend">
           <span class="content__info content__info--danger">Негативные</span>
@@ -31,52 +28,14 @@
 
 <script>
 import Layout from '../components/layout';
-import ChartControl from '../components/control';
-import LineChart from "../components/chart";
-import { DATA_REQUEST } from "actions/charts";
+import StatCharts from '../components/chart';
 
 export default {
     name: "Dashboard",
     components: {
-      LineChart,
       Layout,
-      ChartControl
+      StatCharts
     },
-    data() {
-      return {
-        datasets: null
-      }
-    },
-    methods: {
-      fillData () {
-        this.$store.dispatch(DATA_REQUEST).then(resp => {
-            console.log(resp);
-            this.datasets = {
-              labels: [resp.data.week.dates],
-              xAxisID: 'Дата',
-              yAxisID: 'Количество',
-              datasets: [
-                {
-                  label: ['Позитивные'],
-                  data: resp.data.week.positive.values,
-                  backgroundColor: 'rgba(14, 214, 220, 0.05)',
-                  borderColor: '#0ED6DC',
-                  borderWidth: 2
-                }, {
-                  label: ['Негативные'],
-                  data: resp.data.week.negative.values,
-                  backgroundColor:'rgba(241, 117, 78, 0.1)',
-                  borderColor:'#F17105',
-                  borderWidth: 2
-                }
-              ]
-            }
-        })
-      }
-    },
-  mounted() {
-      this.fillData();
-  }
 }
 </script>
 
@@ -185,16 +144,6 @@ export default {
           background: #03C7CD;
         }
       }
-    }
-  }
-  &__chart {
-    flex-grow: 1;
-    padding-bottom: 4rem;
-    box-sizing: border-box;
-    min-height: 70vh;
-    display: flex;
-    @include tablet {
-      min-height: unset;
     }
   }
   &__caption {

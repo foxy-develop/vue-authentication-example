@@ -5,14 +5,43 @@ import axios from "axios";
 const state = {
   status: "",
   period: "week",
-  data: []
+  data: {},
 };
-
 
 const getters = {
   getPeriod: state => state.period,
-  getData: state => state.data,
-  isDataLoaded: state => state.data.length > 0
+  getData: state => state.data[state],
+  isDataLoaded: state => state.status !== 'loading' && state.status
+}
+
+const prepareDatasets = response => {
+  const dataset = response.data;
+  const periods = ['day', 'week', 'month'];
+  const datasets = {};
+  periods.forEach(period => {
+    datasets[period] = {
+      labels: dataset[period].dates,
+      xAxisID: 'Дата',
+      yAxisID: 'Количество',
+      datasets: [
+        {
+          label: ['Позитивные'],
+          data: dataset[period].positive.values,
+          backgroundColor: 'rgba(14, 214, 220, 0.05)',
+          borderColor: '#0ED6DC',
+          borderWidth: 2
+        },
+        {
+          label: ['Негативные'],
+          data: dataset[period].negative.values,
+          backgroundColor:'rgba(241, 117, 78, 0.1)',
+          borderColor:'#F17105',
+          borderWidth: 2
+        }
+      ]
+    }
+  });
+  return datasets;
 };
 
 const actions = {
@@ -21,9 +50,9 @@ const actions = {
       commit(DATA_REQUEST);
       axios.get(`mentions/stats`)
         .then(resp => {
-          console.log(resp);
           if (resp.data.status) {
-            commit(DATA_SUCCESS, resp);
+            const data = prepareDatasets(resp);
+            commit(DATA_SUCCESS, data);
             resolve(resp);
           }
         })
@@ -43,12 +72,11 @@ const mutations = {
     state.status = 'loading'
   },
   [DATA_SWITCH]: ( state, period )   => {
-    console.log(period);
     state.period = period;
   },
-  [DATA_SUCCESS]: (state, resp) => {
-    state.status = resp.data.status
-    state.date = resp.data;
+  [DATA_SUCCESS]: (state, data) => {
+    state.data = data;
+    state.status = true;
   },
   [DATA_ERROR]: state => {
     state.status = false;
@@ -61,3 +89,4 @@ export default {
   actions,
   mutations
 };
+

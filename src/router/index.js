@@ -21,11 +21,15 @@ const ifNotAuthenticated = (to, from, next) => {
 
 const ifAuthenticated = (to, from, next) => {
   if (store.getters.isAuthenticated) {
-    next();
-    return;
+    if(store.getters.isAuthenticated) {
+      next();
+      return;
+    }
   }
   next("/login");
 };
+// const ifDataLoaded = () => new Promise(resolve =>
+//   store.getters.isDataLoaded.then(resp => resolve(resp)));
 
 // const ifProfileLoaded = () => new Promise(resolve =>
 //     store.getters.isProfileLoaded.then(resp => resolve(resp)));
