@@ -85,7 +85,7 @@ export default {
           }
         }
       },
-      page: this.$route.path,
+      page: this.$route.path
     }
   },
   methods: {

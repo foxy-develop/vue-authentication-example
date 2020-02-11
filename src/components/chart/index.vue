@@ -17,7 +17,7 @@
     <div class="content__chart" v-if="this.$store.getters.isDataLoaded">
       <line-chart
         class="content__chart-inner"
-        :chart-data="data"
+        :chart-data="allData ? allData[this.period] : data"
         :theme = "this.$store.getters.theme"
         :options="options.default"
         :height="100"
@@ -78,101 +78,101 @@ export default {
     LineChart,
   },
   data() {
-      return {
-          period: '',
-          data: null,
-          allData: null,
-          theme: this.$store.getters.theme,
-          options: {
-              default: {
+    return {
+        period: '',
+        data: null,
+        allData: null,
+        theme: this.$store.getters.theme,
+        options: {
+            default: {
+              maintainAspectRatio: false,
+              aspectRatio: 1.8,
+              tooltips: {
+                displayColors: false
+              },
+              legend: {
+                display: false,
+              },
+              scales: {
+                yAxes: [{
+                  ticks: {
+                    beginAtZero: true,
+                    suggestedMin: 0,
+                    stepSize: 500
+                  }
+                }]
+              }
+            },
+            dark: {
                 maintainAspectRatio: false,
                 aspectRatio: 1.8,
                 tooltips: {
-                  displayColors: false
+                    displayColors: false
                 },
                 legend: {
-                  display: false,
+                    display: false,
                 },
                 scales: {
-                  yAxes: [{
-                    ticks: {
-                      beginAtZero: true,
-                      suggestedMin: 0,
-                      stepSize: 500
-                    }
-                  }]
+                    yAxes: [{
+                        gridLines: {
+                            zeroLineColor: 'rgba(255, 255, 255, 0)',
+                            color: 'rgba(0,0,0,0)'
+                        },
+                        ticks: {
+                            fontColor: colors.dark.font,
+                            beginAtZero: true,
+                            suggestedMin: 0,
+                            stepSize: 500
+                        }
+                    }],
+                    xAxes: [{
+                        gridLines: {
+                            zeroLineColor: 'rgba(255, 255, 255, 0)',
+                            color: colors.dark.line
+                        },
+                        ticks: {
+                            fontColor: colors.dark.font,
+                            maxTicksLimit: 10
+                        }
+                    }]
                 }
-              },
-              dark: {
-                  maintainAspectRatio: false,
-                  aspectRatio: 1.8,
-                  tooltips: {
-                      displayColors: false
-                  },
-                  legend: {
-                      display: false,
-                  },
-                  scales: {
-                      yAxes: [{
-                          gridLines: {
-                              zeroLineColor: 'rgba(255, 255, 255, 0)',
-                              color: 'rgba(0,0,0,0)'
-                          },
-                          ticks: {
-                              fontColor: colors.dark.font,
-                              beginAtZero: true,
-                              suggestedMin: 0,
-                              stepSize: 500
-                          }
-                      }],
-                      xAxes: [{
-                          gridLines: {
-                              zeroLineColor: 'rgba(255, 255, 255, 0)',
-                              color: colors.dark.line
-                          },
-                          ticks: {
-                              fontColor: colors.dark.font,
-                              maxTicksLimit: 10
-                          }
-                      }]
-                  }
-              },
-              light: {
-                  maintainAspectRatio: false,
-                  aspectRatio: 1.8,
-                  tooltips: {
-                      displayColors: false
-                  },
-                  legend: {
-                      display: false,
-                  },
-                  scales: {
-                      yAxes: [{
-                          gridLines: {
-                              zeroLineColor: 'rgba(255, 255, 255, 0)',
-                              color: 'rgba(0,0,0,0)'
-                          },
-                          ticks: {
-                              fontColor: colors.light.font,
-                              beginAtZero: true,
-                              suggestedMin: 0,
-                              stepSize: 500
-                          }
-                      }],
-                      xAxes: [{
-                          gridLines: {
-                              zeroLineColor: 'rgba(255, 255, 255, 0)',
-                              color: colors.light.line
-                          },
-                          ticks: {
-                              fontColor: colors.light.font,
-                              maxTicksLimit: 10
-                          }
-                      }]
-                  }
-              }
-          }
-      }
+            },
+            light: {
+                maintainAspectRatio: false,
+                aspectRatio: 1.8,
+                tooltips: {
+                    displayColors: false
+                },
+                legend: {
+                    display: false,
+                },
+                scales: {
+                    yAxes: [{
+                        gridLines: {
+                            zeroLineColor: 'rgba(255, 255, 255, 0)',
+                            color: 'rgba(0,0,0,0)'
+                        },
+                        ticks: {
+                            fontColor: colors.light.font,
+                            beginAtZero: true,
+                            suggestedMin: 0,
+                            stepSize: 500
+                        }
+                    }],
+                    xAxes: [{
+                        gridLines: {
+                            zeroLineColor: 'rgba(255, 255, 255, 0)',
+                            color: colors.light.line
+                        },
+                        ticks: {
+                            fontColor: colors.light.font,
+                            maxTicksLimit: 10
+                        }
+                    }]
+                }
+            }
+        }
+    }
   },
   mounted () {
     this.theme = this.$store.getters.theme;
@@ -192,14 +192,19 @@ export default {
         this.data = this.$store.getters.getData;
       }
     },
+    checkData: function () {
+      if ( !this.allData ) {
+        this.allData = this.$store.getters.getAllData;
+      }
+    },
     updateData: function () {
       this.data = this.$store.getters.getData;
     },
     setPeriod: function () {
+      this.checkData();
       const { period } = this;
-      this.$store.dispatch(DATA_SWITCH, { period }).then(() => {
-        this.updateData();
-      });
+      this.$store.dispatch(DATA_SWITCH, { period })
+        .then(() => { this.updateData(); });
     }
   }
 }

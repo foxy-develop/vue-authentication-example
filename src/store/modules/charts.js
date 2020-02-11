@@ -11,6 +11,7 @@ const state = {
 const getters = {
   getPeriod: state => state.period,
   getData: state => state.data[state.period],
+  getAllData: state => state.data,
   isDataLoaded: state => state.status !== 'loading' && state.status
 }
 
