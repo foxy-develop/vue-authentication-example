@@ -32,7 +32,7 @@ export default {
 </script>
 
 <style lang="scss">
-/*@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700|Rubik:400,500&display=swap&subset=cyrillic');*/
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700|Rubik:400,500&display=swap&subset=cyrillic');
 .fade-enter-active,
 .fade-leave-active {
   transition-duration: 0.35s;

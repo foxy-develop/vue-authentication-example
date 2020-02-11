@@ -7,7 +7,7 @@ import {DATA_REQUEST} from "../actions/charts";
 const state = {
   status: "",
   profile: {},
-  displayMode: 'dark',
+  displayMode: localStorage.getItem('displayMode') || '',
 };
 
 
@@ -23,10 +23,13 @@ const actions = {
       commit(USER_REQUEST);
       axios.get(`user/profile`)
         .then(resp => {
-          console.log(resp);
           if (resp.data.status) {
             commit(USER_SUCCESS, resp);
             dispatch(DATA_REQUEST);
+            resolve();
+          } else {
+            commit(USER_ERROR);
+            dispatch(AUTH_LOGOUT);
             resolve();
           }
         })
@@ -45,9 +48,7 @@ const actions = {
         `user/settheme`,
         { theme })
       .then(resp => {
-        console.log(resp);
         if ( resp.data.status ) {
-          localStorage.removeItem('displayMode');
           localStorage.setItem("displayMode", theme);
           commit(USER_SWITCH_MODE);
           resolve();

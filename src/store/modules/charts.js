@@ -5,16 +5,17 @@ import axios from "axios";
 const state = {
   status: "",
   period: "week",
-  data: {},
+  data: {}
 };
 
 const getters = {
   getPeriod: state => state.period,
-  getData: state => state.data[state],
+  getData: state => state.data[state.period],
   isDataLoaded: state => state.status !== 'loading' && state.status
 }
 
 const prepareDatasets = response => {
+  console.log(response.data);
   const dataset = response.data;
   const periods = ['day', 'week', 'month'];
   const datasets = {};
@@ -29,14 +30,22 @@ const prepareDatasets = response => {
           data: dataset[period].positive.values,
           backgroundColor: 'rgba(14, 214, 220, 0.05)',
           borderColor: '#0ED6DC',
-          borderWidth: 2
+          borderWidth: 2,
+          total:  {
+            domains: dataset[period].positive.total_domains,
+            links: dataset[period].positive.total_links
+          }
         },
         {
           label: ['Негативные'],
           data: dataset[period].negative.values,
           backgroundColor:'rgba(241, 117, 78, 0.1)',
           borderColor:'#F17105',
-          borderWidth: 2
+          borderWidth: 2,
+          total:  {
+            domains: dataset[period].negative.total_domains,
+            links: dataset[period].negative.total_links
+          }
         }
       ]
     }

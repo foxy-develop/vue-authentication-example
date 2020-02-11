@@ -1,6 +1,6 @@
 <template>
   <div class="chart-wrapper">
-    <div class="content__control">
+    <div class="content__control" v-show="this.$store.getters.isDataLoaded">
       <label class="content__control-item">
         <input type="radio" value="day" name="day" v-model="period" @change="setPeriod">
         <span class="content__control-btn">День</span>
@@ -14,173 +14,195 @@
         <span class="content__control-btn">Месяц</span>
       </label>
     </div>
-    <div class="content__chart" v-if="data">
+    <div class="content__chart" v-if="this.$store.getters.isDataLoaded">
       <line-chart
-        v-show="theme === 'light'"
         class="content__chart-inner"
         :chart-data="data"
-        :options="options.light"
-        :height="100"
-      ></line-chart>
-      <line-chart
-        v-show="theme === 'dark'"
-        class="content__chart-inner"
-        :chart-data="data"
-        :options="options.dark"
+        :theme = "this.$store.getters.theme"
+        :options="options.default"
         :height="100"
       ></line-chart>
     </div>
   </div>
 </template>
 <script>
-  import LineChart from "./LineChart";
-  import { DATA_SWITCH } from "../../store/actions/charts";
-  import axios from "axios";
+import LineChart from "./LineChart";
+import { DATA_SWITCH } from "../../store/actions/charts";
+import axios from "axios";
 
-  const prepareDatasets = response => {
-      const dataset = response.data;
-      const periods = ['day', 'week', 'month'];
-      const datasets = {};
-      periods.forEach(period => {
-          datasets[period] = {
-              labels: dataset[period].dates,
-              xAxisID: 'Дата',
-              yAxisID: 'Количество',
-              datasets: [
-                  {
-                      label: ['Позитивные'],
-                      data: dataset[period].positive.values,
-                      backgroundColor: 'rgba(14, 214, 220, 0.05)',
-                      borderColor: '#0ED6DC',
-                      borderWidth: 2
-                  },
-                  {
-                      label: ['Негативные'],
-                      data: dataset[period].negative.values,
-                      backgroundColor:'rgba(241, 117, 78, 0.1)',
-                      borderColor:'#F17105',
-                      borderWidth: 2
-                  }
-              ]
-          }
-      });
-      return datasets;
-  }
-
-  const colors = {
-      'dark': {
-          'font': '#fff',
-          'line': 'rgba(255,255,255,0.1)'
-      },
-      'light': {
-          'font': '#414D55',
-          'line': 'rgba(0,0,0,0.1)'
-      }
-  };
-
-
-  export default {
-    name: 'StatCharts',
-    components: {
-        LineChart,
-    },
-    data() {
-        return {
-            period: '',
-            data: null,
-            allData: null,
-            theme: this.$store.getters.theme,
-            options: {
-                dark: {
-                    maintainAspectRatio: false,
-                    aspectRatio: 1.8,
-                    tooltips: {
-                        displayColors: false
-                    },
-                    legend: {
-                        display: false,
-                    },
-                    scales: {
-                        yAxes: [{
-                            gridLines: {
-                                zeroLineColor: 'rgba(255, 255, 255, 0)',
-                                color: 'rgba(0,0,0,0)'
-                            },
-                            ticks: {
-                                fontColor: colors.dark.font,
-                                beginAtZero: true,
-                                suggestedMin: 0,
-                                stepSize: 500
-                            }
-                        }],
-                        xAxes: [{
-                            gridLines: {
-                                zeroLineColor: 'rgba(255, 255, 255, 0)',
-                                color: colors.dark.line
-                            },
-                            ticks: {
-                                fontColor: colors.dark.font,
-                                maxTicksLimit: 3
-                            }
-                        }]
-                    }
+const prepareDatasets = response => {
+    const dataset = response.data;
+    const periods = ['day', 'week', 'month'];
+    const datasets = {};
+    periods.forEach(period => {
+        datasets[period] = {
+            labels: dataset[period].dates,
+            xAxisID: 'Дата',
+            yAxisID: 'Количество',
+            datasets: [
+                {
+                    label: ['Позитивные'],
+                    data: dataset[period].positive.values,
+                    backgroundColor: 'rgba(14, 214, 220, 0.05)',
+                    borderColor: '#0ED6DC',
+                    borderWidth: 2
                 },
-                light: {
-                    maintainAspectRatio: false,
-                    aspectRatio: 1.8,
-                    tooltips: {
-                        displayColors: false
-                    },
-                    legend: {
-                        display: false,
-                    },
-                    scales: {
-                        yAxes: [{
-                            gridLines: {
-                                zeroLineColor: 'rgba(255, 255, 255, 0)',
-                                color: 'rgba(0,0,0,0)'
-                            },
-                            ticks: {
-                                fontColor: colors.light.font,
-                                beginAtZero: true,
-                                suggestedMin: 0,
-                                stepSize: 500
-                            }
-                        }],
-                        xAxes: [{
-                            gridLines: {
-                                zeroLineColor: 'rgba(255, 255, 255, 0)',
-                                color: colors.light.line
-                            },
-                            ticks: {
-                                fontColor: colors.light.font,
-                                maxTicksLimit: 3
-                            }
-                        }]
-                    }
+                {
+                    label: ['Негативные'],
+                    data: dataset[period].negative.values,
+                    backgroundColor:'rgba(241, 117, 78, 0.1)',
+                    borderColor:'#F17105',
+                    borderWidth: 2
                 }
-            }
+            ]
         }
+    });
+    return datasets;
+}
+
+const colors = {
+    'dark': {
+        'font': '#fff',
+        'line': 'rgba(255,255,255,0.1)'
     },
-    mounted () {
-        this.period = this.$store.getters.getPeriod;
-        this.getData();
-    },
-    methods: {
-        getData: function () {
-            axios.get(`mentions/stats`).then(response => {
-              if (response.data.status) {
-                this.allData = prepareDatasets(response);
-                this.data = this.allData[this.period];
+    'light': {
+        'font': '#414D55',
+        'line': 'rgba(0,0,0,0.1)'
+    }
+};
+
+
+export default {
+  name: 'StatCharts',
+  components: {
+    LineChart,
+  },
+  data() {
+      return {
+          period: '',
+          data: null,
+          allData: null,
+          theme: this.$store.getters.theme,
+          options: {
+              default: {
+                maintainAspectRatio: false,
+                aspectRatio: 1.8,
+                tooltips: {
+                  displayColors: false
+                },
+                legend: {
+                  display: false,
+                },
+                scales: {
+                  yAxes: [{
+                    ticks: {
+                      beginAtZero: true,
+                      suggestedMin: 0,
+                      stepSize: 500
+                    }
+                  }]
+                }
+              },
+              dark: {
+                  maintainAspectRatio: false,
+                  aspectRatio: 1.8,
+                  tooltips: {
+                      displayColors: false
+                  },
+                  legend: {
+                      display: false,
+                  },
+                  scales: {
+                      yAxes: [{
+                          gridLines: {
+                              zeroLineColor: 'rgba(255, 255, 255, 0)',
+                              color: 'rgba(0,0,0,0)'
+                          },
+                          ticks: {
+                              fontColor: colors.dark.font,
+                              beginAtZero: true,
+                              suggestedMin: 0,
+                              stepSize: 500
+                          }
+                      }],
+                      xAxes: [{
+                          gridLines: {
+                              zeroLineColor: 'rgba(255, 255, 255, 0)',
+                              color: colors.dark.line
+                          },
+                          ticks: {
+                              fontColor: colors.dark.font,
+                              maxTicksLimit: 10
+                          }
+                      }]
+                  }
+              },
+              light: {
+                  maintainAspectRatio: false,
+                  aspectRatio: 1.8,
+                  tooltips: {
+                      displayColors: false
+                  },
+                  legend: {
+                      display: false,
+                  },
+                  scales: {
+                      yAxes: [{
+                          gridLines: {
+                              zeroLineColor: 'rgba(255, 255, 255, 0)',
+                              color: 'rgba(0,0,0,0)'
+                          },
+                          ticks: {
+                              fontColor: colors.light.font,
+                              beginAtZero: true,
+                              suggestedMin: 0,
+                              stepSize: 500
+                          }
+                      }],
+                      xAxes: [{
+                          gridLines: {
+                              zeroLineColor: 'rgba(255, 255, 255, 0)',
+                              color: colors.light.line
+                          },
+                          ticks: {
+                              fontColor: colors.light.font,
+                              maxTicksLimit: 10
+                          }
+                      }]
+                  }
               }
-            })
-        },
-        setPeriod: function () {
-            const { period } = this;
-            this.$store.dispatch(DATA_SWITCH, { period }).then(() => {this.getData();});
-        }
+          }
+      }
+  },
+  mounted () {
+    this.theme = this.$store.getters.theme;
+    this.period = this.$store.getters.getPeriod;
+    this.getData();
+  },
+  methods: {
+    getData: function () {
+      if ( !this.$store.getters.getData ) {
+        axios.get(`mentions/stats`).then(response => {
+          if (response.data.status) {
+            this.allData = prepareDatasets(response);
+            this.data = this.allData[this.period];
+          }
+        })
+      } else {
+        this.data = this.$store.getters.getData;
+      }
+    },
+    updateData: function () {
+      this.data = this.$store.getters.getData;
+    },
+    setPeriod: function () {
+      const { period } = this;
+      this.$store.dispatch(DATA_SWITCH, { period }).then(() => {
+        this.updateData();
+      });
     }
   }
+}
 </script>
 
 <style lang="scss">
@@ -206,7 +228,11 @@
       flex-grow: 1;
       padding-bottom: 4rem;
       box-sizing: border-box;
-      min-height: 70vh;
+      min-height: 60vh;
+      max-width: 100%;
+      &-inner {
+        max-width: 100%;
+      }
       display: flex;
       @include tablet {
         min-height: unset;
@@ -272,7 +298,6 @@
         transition: .3s ease-in-out;
         background: rgba(54, 66, 68, 0.3);
         cursor: pointer;
-
         &:hover {
           background: rgba(54, 66, 68, 0.5);
         }

@@ -34,7 +34,7 @@
   </header>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @function rem($px) {
   @return $px / 10 * 1rem;
 }

@@ -1,7 +1,7 @@
 <template>
   <Layout>
     <template v-slot:sidebar>
-
+      <Counters/>
     </template>
     <template v-slot:title>
       Общая статистика выдачи
@@ -29,12 +29,14 @@
 <script>
 import Layout from '../components/layout';
 import StatCharts from '../components/chart';
+import Counters from '../components/counters';
 
 export default {
     name: "Dashboard",
     components: {
       Layout,
-      StatCharts
+      StatCharts,
+      Counters
     },
 }
 </script>

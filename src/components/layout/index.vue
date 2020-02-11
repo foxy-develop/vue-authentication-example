@@ -4,9 +4,7 @@
       <div class="sidebar__title">
         <slot name="title"></slot>
       </div>
-      <div class="sidebar__content">
-        <slot name="sidebar"></slot>
-      </div>
+      <slot name="sidebar"></slot>
     </aside>
     <section class="content">
       <h1 class="content__title">
