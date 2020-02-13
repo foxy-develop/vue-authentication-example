@@ -28,8 +28,8 @@ const ifAuthenticated = (to, from, next) => {
   }
   next("/login");
 };
-// const ifDataLoaded = () => new Promise(resolve =>
-//   store.getters.isDataLoaded.then(resp => resolve(resp)));
+const ifDataLoaded = () => new Promise(resolve =>
+  store.getters.isDataLoaded.then(resp => resolve(resp)));
 
 // const ifProfileLoaded = () => new Promise(resolve =>
 //     store.getters.isProfileLoaded.then(resp => resolve(resp)));
@@ -54,7 +54,10 @@ export default new Router({
       name: "Login",
       meta: { darkMode: true },
       component: Login,
-      beforeEnter: ifNotAuthenticated
+      beforeEnter: ifNotAuthenticated,
     }
-  ]
+  ],
+  scrollBehavior (to, from, savedPosition) {
+    return { x: 0, y: 0 }
+  }
 });

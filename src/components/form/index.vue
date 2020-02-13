@@ -13,11 +13,12 @@
         <button class="login-form__btn" type="submit">Отправить</button>
       </form>
       <form v-else class="login-form__form no-delay" @submit.prevent="login">
-        <input
+        <imask-input
           class="login-form__input"
           v-bind:required="!this.$store.getters.isPhoneApproved"
           v-model="password"
-          type="password"
+          :mask="maskPass"
+          :unmask="false"
           placeholder="Пароль"
         />
         <button class="login-form__btn" type="submit">Войти</button>
@@ -40,7 +41,10 @@ export default {
       phone: "+38 (063) 307-67-19",
       phoneChecked: false,
       value: "",
-      mask: '+00 (000) 000-00-00'
+      passValue: "",
+      mask: '+00 (000) 000-00-00',
+      maskPass: '000-000',
+      loaded: false
     };
   },
   components: {
@@ -50,7 +54,7 @@ export default {
     login: function() {
         const { password, phone } = this;
         this.$store.dispatch(AUTH_REQUEST, { password, phone }).then(() => {
-          this.$router.push("/");
+              this.$router.push("/");
         });
     },
     getPass: function() {

@@ -89,19 +89,19 @@ export default {
     }
   },
   methods: {
-    updateChart: function () {
+    render: function () {
       this.renderChart(this.chartData, this.options[this.theme]);
     }
   },
   mounted () {
-    this.updateChart();
+    this.render();
   },
   watch: {
     chartData () {
-      this.updateChart();
+      this.render();
     },
     theme () {
-      this.updateChart();
+      this.render();
     }
   }
 }

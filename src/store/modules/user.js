@@ -3,6 +3,7 @@ import axios from "axios";
 import Vue from "vue";
 import {AUTH_LOGOUT } from "../actions/auth";
 import {DATA_REQUEST} from "../actions/charts";
+import {MENTIONS_REQUEST, MENTIONS_FILTER_REQUEST} from "../actions/mentions";
 
 const state = {
   status: "",
@@ -26,6 +27,8 @@ const actions = {
           if (resp.data.status) {
             commit(USER_SUCCESS, resp);
             dispatch(DATA_REQUEST);
+            dispatch(MENTIONS_REQUEST);
+            dispatch(MENTIONS_FILTER_REQUEST);
             resolve();
           } else {
             commit(USER_ERROR);

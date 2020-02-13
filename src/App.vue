@@ -1,7 +1,7 @@
 <template>
   <div id="app"
        v-bind:class="[ 'body', 'body--'+this.$store.getters.theme ]">
-    <Header v-show="this.$store.getters.isProfileLoaded" />
+    <Header v-if="this.$store.getters.isProfileLoaded" />
     <main v-bind:class="[ this.$store.getters.isAuthenticated
        ? 'main'
        : 'main main--bg' ]">
@@ -97,6 +97,8 @@ body {
   background: #F1F5F8;
   box-sizing: border-box;
   height: 100vh;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 .body {
   display: flex;
@@ -146,13 +148,13 @@ body {
   }
   &__inner {
     display: flex;
-    display: flex;
     padding: 1rem 1.5rem;
     max-width: 139rem;
     width: 100%;
     margin: 0 auto;
     flex-direction: column;
     box-sizing: border-box;
+    flex-grow: 1;
     @include desktop {
       flex-direction: row;
     }

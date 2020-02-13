@@ -2,7 +2,8 @@
 import {
   PASS_REQUEST,
   PASS_ERROR,
-  PASS_SUCCESS
+  PASS_SUCCESS,
+  PASS_LOGOUT
 } from "../actions/pass";
 
 import axios from "axios";
@@ -37,6 +38,9 @@ const actions = {
         });
     });
   },
+  [PASS_LOGOUT]: ({ commit }) => {
+    commit(PASS_LOGOUT);
+  }
 };
 
 const mutations = {
@@ -47,11 +51,16 @@ const mutations = {
   [PASS_SUCCESS]: (state, resp ) => {
     state.status = resp.data.status;
     state.hasLoadedOnce = true;
-    state.message = resp.data.message;
+    state.message = '';
   },
-  [PASS_ERROR]: state  => {
+  [PASS_ERROR]: (state, resp)  => {
+    state.message = resp.data.message;
     state.status = false;
     state.hasLoadedOnce = true;
+    state.phone = "";
+    localStorage.removeItem("user-token");
+  },
+  [PASS_LOGOUT]: (state, resp)  => {
     state.phone = "";
     localStorage.removeItem("user-token");
   },

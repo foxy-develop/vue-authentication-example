@@ -70,6 +70,7 @@ $shadow-color: #142e6e;
   font-family: 'Rubik', sans-serif;
   line-height: 2rem;
   letter-spacing: 0.1px;
+  margin-top: -1rem;
   z-index: 1;
   width: 100%;
   &__img {

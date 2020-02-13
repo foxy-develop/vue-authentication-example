@@ -1,26 +1,31 @@
 <template>
   <Layout>
     <template v-slot:sidebar>
+      <div class="sidebar__title">
+        Cтатистика выдачи
+      </div>
       <Counters/>
     </template>
     <template v-slot:title>
       Общая статистика выдачи
     </template>
     <template v-slot:content >
-      <StatCharts></StatCharts>
-      <div class="content__caption">
-        <div class="content__legend">
-          <span class="content__info content__info--danger">Негативные</span>
-          <span class="content__info">Позитивные</span>
+        <div class="content__main">
+        <StatCharts></StatCharts>
+        <div class="content__caption">
+          <div class="content__legend">
+            <span class="content__info content__info--danger">Негативные</span>
+            <span class="content__info">Позитивные</span>
+          </div>
+          <router-link
+            tag="button"
+            to="/mentions"
+            exact
+            class="content__btn"
+          >
+            Выдача
+          </router-link>
         </div>
-        <router-link
-          tag="button"
-          to="/mentions"
-          exact
-          class="content__btn"
-        >
-          Выдача
-        </router-link>
       </div>
     </template>
   </Layout>

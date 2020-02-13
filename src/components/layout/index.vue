@@ -1,18 +1,15 @@
 <template>
   <div class="main__inner">
     <aside class="sidebar">
-      <div class="sidebar__title">
-        <slot name="title"></slot>
-      </div>
+      <slot name="mentionsHeader"></slot>
       <slot name="sidebar"></slot>
     </aside>
     <section class="content">
       <h1 class="content__title">
         <slot name="title"></slot>
       </h1>
-      <div class="content__main">
-        <slot name="content"></slot>
-      </div>
+      <slot name="filter"></slot>
+      <slot name="content"></slot>
     </section>
   </div>
 </template>
@@ -42,6 +39,27 @@ export default {
 @mixin desktop-lg {
   @media (min-width: 1200px) { @content; }
 }
+
+@keyframes reveal-title {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes reveal-side {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 .content {
   z-index: 1;
   flex-grow: 1;
@@ -49,6 +67,9 @@ export default {
   padding-bottom: 4rem;
   box-sizing: border-box;
   display: flex;
+  @include desktop {
+    max-width: calc(100% - 23rem);
+  }
   &__title {
     color: #fff;
     margin-bottom: 2rem;
@@ -58,6 +79,12 @@ export default {
     line-height: 4rem;
     transition: .3s ease-in-out;
     display: none;
+    animation: reveal-title;
+    animation-duration: .3s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+    opacity: 0;
+    transform: translateX(-20px);
     @include tablet {
       display: flex;
     }
@@ -71,6 +98,13 @@ export default {
     transition: .3s ease-in-out;
     flex-direction: column;
     display: flex;
+    animation: reveal-title;
+    animation-duration: .5s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+    opacity: 0;
+    transform: translateX(-20px);
+    animation-delay: .3s;
     @include tablet {
       padding: 2rem;
     }
@@ -157,6 +191,12 @@ export default {
     transition: .3s ease-in-out;
     display: flex;
     justify-content: center;
+    animation: reveal-side;
+    animation-duration: .35s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+    opacity: 0;
+    transform: translateY(20px);
     @include tablet {
       justify-content: flex-start;
     }

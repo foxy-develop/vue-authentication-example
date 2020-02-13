@@ -3,7 +3,9 @@ import Vuex from "vuex";
 import auth from "./modules/auth";
 import user from "./modules/user";
 import pass from "./modules/passAuth";
+import mentions from "./modules/mentions";
 import chart from "./modules/charts";
+
 import AxiosPlugin from "vue-axios-cors";
 Vue.use(Vuex);
 Vue.use(AxiosPlugin);
@@ -15,6 +17,7 @@ export default new Vuex.Store({
     auth,
     pass,
     user,
+    mentions,
     chart
   },
   strict: debug

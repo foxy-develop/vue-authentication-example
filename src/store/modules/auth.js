@@ -6,6 +6,7 @@ import {
   AUTH_LOGOUT
 } from "../actions/auth";
 import { USER_REQUEST } from "../actions/user";
+import { PASS_LOGOUT} from "../actions/pass";
 import axios from "axios";
 
 const state = {
@@ -29,9 +30,8 @@ const actions = {
         `auth/login`,
         { password, phone })
         .then(resp => {
-          console.log(resp);
           if ( resp.data.status ) {
-            const token = resp.data.token
+            const token = resp.data.token;
             localStorage.setItem('user-token', token);
             axios.defaults.headers.common['Access-Token'] = token;
             commit(AUTH_SUCCESS, resp);
@@ -54,11 +54,11 @@ const actions = {
     return new Promise(resolve => {
       axios.get(`auth/logout`)
       .then(resp => {
-        console.log(resp);
         commit(AUTH_LOGOUT);
+        commit(PASS_LOGOUT);
         localStorage.removeItem('user-token');
         localStorage.removeItem("displayMode");
-        delete axios.defaults.headers.common['Access-Token']
+        delete axios.defaults.headers.common['Access-Token'];
         resolve();
       });
     });

@@ -29,23 +29,50 @@
         />
       </path>
     </svg>
+    <span class="loader__text">Загрузка</span>
   </div>
 </template>
 
-<style scoped>
+<style lang="scss">
 .loader {
   height: 100px;
   width: 100%;
   text-align: center;
   padding: 1em;
   margin: 0 auto 1em;
-  display: inline-block;
+  display: flex;
   vertical-align: top;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  flex-direction: column;
+  font-size: 14px;
+  font-family: 'Rubik', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+.loader__text {
+  margin-top: 1rem;
+  transition: .3s ease-in-out;
+}
+.body {
+  &--light {
+    .loader__text {
+      color: rgba(65, 77, 85, 0.5);
+    }
+  }
+  &--dark {
+    .loader__text {
+      color: rgba(243,249,250, 0.5);
+    }
+  }
+}
+.loader {
+  svg path {
+    fill: rgb(14, 214, 220);
+  }
 }
 
-svg path {
-  fill: #ffa035;
-}
 </style>
 
 <script>

@@ -1,6 +1,7 @@
 import Vue from "vue";
 import App from "./App";
 import router from "./router";
+import VueNumber from "vue-number-animation";
 import store from "./store";
 import Loading from "components/lib/loading";
 import CenterContainer from "components/lib/center-container";
@@ -10,7 +11,7 @@ import AxiosPlugin from "vue-axios-cors";
 
 Vue.config.productionTip = false;
 Vue.use(AxiosPlugin);
-
+Vue.use(VueNumber);
 axios.defaults.headers.common['X-API-KEY'] = 'c8578dcef57c0e7d97d88707614f1184';
 axios.defaults.baseURL = 'https://cliff.world/api/';
 

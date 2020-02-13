@@ -1,26 +1,46 @@
 <template>
   <div class="sidebar__content">
-    <ul class="sidebar__data">
+    <ul class="sidebar__data" v-if="this.$store.getters.isDataLoaded">
       <li class="sidebar__item">
-        <span class="sidebar__num" v-if="this.$store.getters.isDataLoaded">{{ this.$store.getters.getData.datasets[0].total.links }}</span>
-        <span class="sidebar__num" v-else>0</span>
+        <number
+          class="sidebar__num"
+          :from="0"
+          :to="this.$store.getters.getData.datasets[0].total.links"
+          :duration="1"
+          easing="Power3.easeIn">
+        </number>
         <span class="sidebar__desc">адресов</span>
       </li>
       <li class="sidebar__item">
-        <span class="sidebar__num" v-if="this.$store.getters.isDataLoaded">{{ this.$store.getters.getData.datasets[0].total.domains }}</span>
-        <span class="sidebar__num" v-else>0</span>
+        <number
+          class="sidebar__num"
+          :from="0"
+          :to="this.$store.getters.getData.datasets[0].total.domains"
+          :duration="1"
+          easing="Power3.easeIn">
+        </number>
         <span class="sidebar__desc">доменов</span>
       </li>
     </ul>
-    <ul class="sidebar__data">
+    <ul class="sidebar__data" v-if="this.$store.getters.isDataLoaded">
       <li class="sidebar__item sidebar__item--danger">
-        <span class="sidebar__num" v-if="this.$store.getters.isDataLoaded">{{ this.$store.getters.getData.datasets[1].total.links }}</span>
-        <span class="sidebar__num" v-else>0</span>
+        <number
+          class="sidebar__num"
+          :from="0"
+          :to="this.$store.getters.getData.datasets[1].total.links"
+          :duration="1"
+          easing="Power3.easeIn">
+        </number>
         <span class="sidebar__desc">адресов</span>
       </li>
       <li class="sidebar__item sidebar__item--danger">
-        <span class="sidebar__num" v-if="this.$store.getters.isDataLoaded">{{ this.$store.getters.getData.datasets[1].total.domains }}</span>
-        <span class="sidebar__num" v-else>0</span>
+        <number
+          class="sidebar__num"
+          :from="0"
+          :to="this.$store.getters.getData.datasets[1].total.domains"
+          :duration="1"
+          easing="Power3.easeIn">
+        </number>
         <span class="sidebar__desc">доменов</span>
       </li>
     </ul>
@@ -39,6 +59,16 @@
 </script>
 
 <style lang="scss">
+  @keyframes reveal {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    } to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+  }
+
   @function rem($px) {
     @return $px / 10 * 1rem;
   }
@@ -104,6 +134,13 @@
       display: flex;
       flex-direction: column;
       list-style: none;
+      animation: reveal;
+      animation-duration: .5s;
+      animation-timing-function: ease-in;
+      animation-fill-mode: forwards;
+      @media (min-width: 600px) and (orientation: landscape) {
+        flex-direction: row;
+      }
       @include tablet {
         flex-direction: row;
       }
@@ -124,6 +161,12 @@
       flex-direction: column;
       display: flex;
       margin-bottom: 2rem;
+      @media (min-width: 600px) and (orientation: landscape) {
+        margin-left: 4rem;
+      }
+      @include tablet {
+        margin-left: 0;
+      }
       &:last-child {
         @include tablet {
           margin-left: 5rem;
