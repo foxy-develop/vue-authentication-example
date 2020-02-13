@@ -1,6 +1,6 @@
 <template>
   <div class="chart-wrapper">
-    <div class="content__control" v-show="this.loaded && this.$store.getters.isDataLoaded">
+    <div class="content__control" v-show="this.$store.getters.isDataLoaded">
       <label class="content__control-item">
         <input type="radio" value="day" name="day" v-model="period" @change="setPeriod">
         <span class="content__control-btn">День</span>
@@ -14,11 +14,12 @@
         <span class="content__control-btn">Месяц</span>
       </label>
     </div>
-    <div class="content__chart" v-if="this.loaded && this.$store.getters.isDataLoaded">
+    <div class="content__chart" v-if="this.$store.getters.isDataLoaded">
       <line-chart
+        v-if="this.$store.getters.isDataLoaded"
         class="content__chart-inner"
-        :chart-data="allData[this.period]"
-        :theme = "this.$store.getters.theme"
+        :chart-data="chartData"
+        :theme = "theme"
         :options="options.default"
         :height="100"
       ></line-chart>
@@ -82,7 +83,7 @@
         data() {
             return {
                 period: '',
-                data: null,
+                chartData: this.$store.getters.getData,
                 allData: null,
                 loaded: false,
                 theme: this.$store.getters.theme,
@@ -191,31 +192,32 @@
                     axios.get(`mentions/stats`).then(response => {
                         if (response.data.status) {
                             this.allData = prepareDatasets(response);
-                            this.data = this.allData[this.period];
+                            this.chartData = this.allData[this.period];
                             this.loaded = true;
                         }
                     })
                 } else {
-                    this.data = this.$store.getters.getData;
                     this.allData = this.$store.getters.getAllData;
+                    this.chartData = this.allData[this.period];
                     this.loaded = true;
                 }
             },
             checkData: function () {
                 if ( !this.allData ) {
-                    this.data = this.$store.getters.getData;
                     this.allData = this.$store.getters.getAllData;
+                    this.chartData = this.allData[this.period];
                 }
             },
             updateData: function () {
-                this.data = this.$store.getters.getData;
                 this.allData = this.$store.getters.getAllData;
+                this.chartData = this.allData[this.period];
 
             },
             setPeriod: function () {
                 this.checkData();
                 const { period } = this;
                 this.$store.dispatch(DATA_SWITCH, { period });
+                this.chartData = this.allData[period];
             }
         }
     }

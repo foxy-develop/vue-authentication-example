@@ -1,8 +1,7 @@
 <template>
   <Layout>
     <template v-slot:sidebar>
-
-      <div class="sidebar__content">
+      <div class="sidebar__content sidebar__content--mentions">
         <MentionsCounters></MentionsCounters>
       </div>
     </template>
@@ -86,7 +85,7 @@ export default {
     }
   }
 
-  .sidebar__content {
+  .sidebar__content.sidebar__content--mentions {
     flex-grow: 1;
     align-items: center;
     box-sizing: border-box;

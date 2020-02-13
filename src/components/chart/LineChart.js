@@ -1,4 +1,5 @@
 import { Line } from 'vue-chartjs'
+import {reactiveProp} from "vue-chartjs/es/mixins";
 
 const colors = {
   'dark': {
@@ -13,6 +14,7 @@ const colors = {
 export default {
   extends: Line,
   props: ['chartData', 'theme'],
+  mixins: { reactiveProp },
   data() {
     return {
       options: {

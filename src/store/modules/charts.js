@@ -56,7 +56,6 @@ const prepareDatasets = response => {
 
 const actions = {
   [DATA_REQUEST]: ({ commit }) => {
-
     return new Promise(resolve => {
       commit(DATA_REQUEST);
       axios.get(`mentions/stats`)

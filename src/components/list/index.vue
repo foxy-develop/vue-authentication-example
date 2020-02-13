@@ -1,9 +1,8 @@
 <template>
   <transition-group class="mentions" tag="div" name="list" v-if="this.$store.getters.isDataLoaded">
-    <div class="mentions__item" v-for="(mention, index) in this.$store.getters.getMentions"
+    <div class="mentions__item" v-for="(mention, index) in mentions"
          :key="mention.hash"
          :style="{animationDelay: index < 25 ? index * 100 + 'ms' : 100 + 'ms' }">
-
       <div :class="['mentions__icon', mention.content_type ]">
         <img :src=mention.favicon :alt=mention.domain  >
       </div>
@@ -27,19 +26,17 @@
         components: {
             loading
         },
-        data() {
-            return {
-                mentions: null,
+        computed: {
+            mentions: function () {
+                const types = this.$store.getters.getTypes;
+                const arr = this.$store.getters.getMentions;
+                return arr.filter(el => {
+                    if (el.content_type != types.negative && el.content_type != types.positive) {
+                        return el;
+                    }
+                })
             }
-        },
-        methods: {
-            fillMentions: function () {
-                this.mentions = this.$store.getters.getMentions;
-            }
-        },
-        mounted() {
-          this.fillMentions();
-        },
+        }
     }
 </script>
 
@@ -203,7 +200,7 @@
     }
 
   }
-  .negative:after {
+  .negative {
     color: #F1754E;
     &:after {
       background: #F1754E;

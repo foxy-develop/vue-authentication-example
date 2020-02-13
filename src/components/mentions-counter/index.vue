@@ -1,31 +1,27 @@
 <template>
   <div class="mentions-counter" v-if="this.$store.getters.isDataLoaded">
-    <div class="mentions-counter__item mentions-counter__item--active">
-      <number
-        class="mentions-counter__num"
-        :from="0"
-        :to="this.$store.getters.getMentionsTotal.positive"
-        :duration="1"
-        easing="Power3.easeIn">
-      </number>
-      <div class="mentions-counter__text">позитив</div>
-    </div>
-    <div class="mentions-counter__item">
-      <number
-        class="mentions-counter__num"
-        :from="0"
-        :to="this.$store.getters.getMentionsTotal.negative"
-        :duration="1"
-        easing="Power3.easeIn">
-      </number>
-      <div class="mentions-counter__text">негатив</div>
-    </div>
+    <Toggler
+      :to="this.$store.getters.getMentionsTotal.positive"
+      :name="'позитив'"
+      :alt="'positive'"
+      :active=" this.$store.getters.getTypes.positive === '' ">
+    </Toggler>
+    <Toggler
+      :to="this.$store.getters.getMentionsTotal.negative"
+      :name="'негатив'"
+      :alt="'negative'"
+      :active=" this.$store.getters.getTypes.negative === '' ">
+    </Toggler>
   </div>
 </template>
 
 <script>
+  import Toggler from '../toggler';
     export default {
-        name: "MentionsCounters"
+        name: "MentionsCounters",
+        components: {
+            Toggler
+        }
     }
 </script>
 
@@ -63,9 +59,9 @@
        justify-content: center;
        background: #F9FBFD;
        width: 100%;
-       z-index: 100;
        position: relative;
        transition: .3s ease-in-out;
+       cursor: pointer;
         @include desktop {
           height: 134px;
         }
@@ -82,16 +78,23 @@
          bottom: 0;
          box-sizing: border-box;
          transition: .3s ease-in-out;
+         z-index: 102;
        }
         &--active {
            background: #FFF;
            box-shadow: 0px 1px 8px rgba(20, 46, 110, 0.1);
-           z-index: 102;
            transition: .3s ease-in-out;
+
          }
         &:first-child {
            border-top-left-radius: 8px;
            border-bottom-left-radius: 8px;
+           z-index: 101;
+           &.mentions-counter__item--active {
+             &:after {
+               background: #0ED6DC;
+             }
+           }
            @include desktop {
              border-top-right-radius: 8px;
              border-bottom-left-radius: 0;
@@ -99,13 +102,15 @@
             .mentions-counter__num {
               color: #0ED6DC;
             }
-            &:after {
-               background: #0ED6DC;
-             }
         }
         &:last-child {
              border-top-right-radius: 8px;
              border-bottom-right-radius: 8px;
+          &.mentions-counter__item--active {
+            &:after {
+              background: #F1754E;
+            }
+          }
              @include desktop {
                border-bottom-left-radius: 8px;
                border-top-right-radius: 0;

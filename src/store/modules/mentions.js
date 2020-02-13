@@ -5,7 +5,8 @@ import {
   MENTIONS_FILTER_REQUEST,
   MENTIONS_FILTER_SUCCESS,
   MENTIONS_FILTER,
-  MENTIONS_CHANGE_FILTER
+  MENTIONS_CHANGE_FILTER,
+  MENTIONS_CHANGE_TYPE
 } from "../actions/mentions";
 
 import axios from "axios";
@@ -22,6 +23,10 @@ const state = {
     region_id: '',
     per_page: 10,
     keyword_id : ''
+  },
+  type: {
+    positive: '',
+    negative: ''
   }
 };
 
@@ -29,7 +34,8 @@ const getters = {
   isMentionsLoaded: state => state.status && state.filter && state.mentions,
   getMentions: state => state.mentions,
   getMentionsTotal: state => state.total,
-  getFilter: state => state.filter
+  getFilter: state => state.filter,
+  getTypes: state => state.type
 };
 
 const actions = {
@@ -38,7 +44,6 @@ const actions = {
       axios.post(`mentions/list`)
         .then(resp => {
           if (resp.data.status) {
-            console.log(resp.data);
             const mentions = resp.data;
             commit(MENTIONS_SUCCESS, mentions);
             resolve();
@@ -56,7 +61,6 @@ const actions = {
       axios.get(`mentions/control`)
         .then(resp => {
           if (resp.data.status) {
-            console.log(resp.data);
             const filter = resp.data;
             commit(MENTIONS_FILTER_SUCCESS, filter);
             resolve();
@@ -70,7 +74,6 @@ const actions = {
   },
   [MENTIONS_CHANGE_FILTER]: ({ commit, dispatch }, { options } ) => {
     return new Promise(resolve => {
-      console.log('Запуск фильтра');
       commit(MENTIONS_REQUEST);
       commit(MENTIONS_CHANGE_FILTER, options);
       axios.post(`mentions/list`, {
@@ -80,8 +83,6 @@ const actions = {
       })
         .then(resp => {
           if (resp.data.status) {
-            console.log('Данные после фильтра');
-            console.log(resp.data);
             const mentions = resp.data;
             commit(MENTIONS_SUCCESS, mentions);
             resolve();
@@ -92,7 +93,9 @@ const actions = {
           resolve();
         });
     });
-    // dispatch(MENTIONS_REQUEST);
+  },
+  [MENTIONS_CHANGE_TYPE]: ({ commit }, { options }) => {
+    commit(MENTIONS_CHANGE_TYPE, options);
   }
 };
 
@@ -106,8 +109,10 @@ const mutations = {
     state.mentions = mentions.mentions;
     state.status = true;
   },
+  [MENTIONS_CHANGE_TYPE]: (state, options) => {
+    state.type[options.type] = options.val ? '' : options.type;
+  },
   [MENTIONS_CHANGE_FILTER]: (state, options)=> {
-
     state.filtered.per_page = options.per_page != ''? options.per_page : state.filtered.per_page;
     state.filtered.region_id = options.region_id != '' ? options.region_id : state.filtered.region_id;
     state.filtered.keyword_id = options.keyword_id != '' ? options.keyword_id : state.filtered.keyword_id;
