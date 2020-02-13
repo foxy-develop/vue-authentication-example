@@ -1,12 +1,12 @@
 'use strict'
-const utils = require('./utils')
-const webpack = require('webpack')
-const config = require('../config')
-const merge = require('webpack-merge')
-const baseWebpackConfig = require('./webpack.base.conf')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
-const portfinder = require('portfinder')
+const utils = require('./utils');
+const webpack = require('webpack');
+const config = require('../config');
+const merge = require('webpack-merge');
+const baseWebpackConfig = require('./webpack.base.conf');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin');
+const portfinder = require('portfinder');
 
 const devWebpackConfig = merge(baseWebpackConfig, {
   module: {
@@ -43,9 +43,9 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     // https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: 'index.html',
+      template: '../src/index.html',
       inject: true,
-      favicon: '../build/logo.png',
+      favicon: '../src/assets/logo.png',
       title: 'ARTDOCK - Client Panel'
     }),
     new FriendlyErrorsPlugin()
@@ -59,9 +59,9 @@ module.exports = new Promise((resolve, reject) => {
       reject(err)
     } else {
       // publish the new Port, necessary for e2e tests
-      process.env.PORT = port
+      process.env.PORT = port;
       // add port to devServer config
-      devWebpackConfig.devServer.port = port
+      devWebpackConfig.devServer.port = port;
 
       // Add FriendlyErrorsPlugin
       devWebpackConfig.plugins.push(new FriendlyErrorsPlugin({
@@ -71,9 +71,9 @@ module.exports = new Promise((resolve, reject) => {
         onErrors: config.dev.notifyOnErrors
         ? utils.createNotifierCallback()
         : undefined
-      }))
+      }));
 
       resolve(devWebpackConfig)
     }
   })
-})
+});

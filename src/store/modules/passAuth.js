@@ -13,13 +13,14 @@ const state = {
   status: "",
   hasLoadedOnce: false,
   phone: "",
-  message: ''
+  message: '',
+  hasError: false
 };
 
 const getters = {
   isPhoneApproved: state => !!state.phone,
-  getMessage: state => state.message,
-  hasError: state => state.status === false
+  getPassMessage: state => state.message,
+  hasError: state => state.hasError
 };
 
 const actions = {
@@ -29,8 +30,14 @@ const actions = {
       axios.post('auth', { phone } )
         .then(resp => {
           console.log(resp);
-          commit(PASS_SUCCESS, resp);
-          resolve(resp);
+          if ( resp.data.status ) {
+            commit(PASS_SUCCESS, resp);
+            resolve(resp);
+          } else {
+            commit(PASS_ERROR, resp);
+            resolve(resp);
+          }
+
         })
         .catch(err => {
           commit(PASS_ERROR, err);
@@ -52,12 +59,14 @@ const mutations = {
     state.status = resp.data.status;
     state.hasLoadedOnce = true;
     state.message = '';
+    state.hasErorr = false;
   },
   [PASS_ERROR]: (state, resp)  => {
     state.message = resp.data.message;
     state.status = false;
     state.hasLoadedOnce = true;
     state.phone = "";
+    state.hasErorr = true;
     localStorage.removeItem("user-token");
   },
   [PASS_LOGOUT]: (state, resp)  => {

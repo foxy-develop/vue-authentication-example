@@ -18,7 +18,8 @@ const state = {
 
 const getters = {
   isAuthenticated: state => !!state.token,
-  authStatus: state => state.status
+  authStatus: state => state.status,
+  getAuthMessage: state => state.message
 };
 
 
@@ -38,9 +39,9 @@ const actions = {
             dispatch(USER_REQUEST);
             resolve(resp);
           } else {
-            commit(AUTH_ERROR);
+            commit(AUTH_ERROR, resp);
             localStorage.removeItem("user-token");
-            resolve();
+            resolve(resp);
           }
         })
         .catch(err => {
@@ -76,6 +77,7 @@ const mutations = {
     state.token = resp.data.token;
   },
   [AUTH_ERROR]: ( state, resp ) => {
+    console.log(resp);
     state.message = resp.data.message;
     state.status = false;
     state.hasLoadedOnce = true;

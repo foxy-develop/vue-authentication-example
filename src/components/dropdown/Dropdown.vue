@@ -187,7 +187,7 @@
   }
   .filter__item.filter__item--keywords {
     .dropdown-menu {
-      left: -85px;
+      left: -75px;
       @include tablet {
         left: 0;
       }

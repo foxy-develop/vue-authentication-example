@@ -1,6 +1,6 @@
 <template>
   <transition name="fade" mode="out-in">
-    <div v-bind:class="[this.$store.getters.hasError ? 'form-wrapper has-error' : 'form-wrapper']">
+    <div v-bind:class="[this.$store.getters.getPassMessage ||  this.$store.getters.getAuthMessage ? 'form-wrapper has-error' : 'form-wrapper']">
       <form v-if="!this.$store.getters.isPhoneApproved" class="login-form__form" @submit.prevent="getPass">
         <imask-input
           class="login-form__input phone-input"
@@ -23,7 +23,7 @@
         />
         <button class="login-form__btn" type="submit">Войти</button>
       </form>
-      <div v-show="this.$store.getters.hasError" class="login-form__notif"> {{ this.$store.getters.getMessage }} </div>
+      <div class="login-form__notif"> {{ this.$store.getters.getPassMessage ||  this.$store.getters.getAuthMessage }} </div>
     </div>
   </transition>
 </template>
@@ -164,7 +164,7 @@ $shadow-color: #142e6e;
     font-size: 1.2rem;
     transform: translateX(-50%);
     left: 50%;
-    opacity: 0;
+    opacity: 1;
     transition: .3s ease-in-out;
   }
   &__text {

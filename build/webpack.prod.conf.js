@@ -63,8 +63,8 @@ const webpackConfig = merge(baseWebpackConfig, {
       filename: process.env.NODE_ENV === 'testing'
         ? 'index.html'
         : config.build.index,
-      template: 'index.html',
-      favicon: '../build/logo.png',
+      template: '../src/index.html',
+      favicon: '../src/assets/logo.png',
       title: 'ARTDOCK - Client Panel',
       inject: true,
       minify: {
